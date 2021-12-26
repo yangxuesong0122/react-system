@@ -25,17 +25,37 @@ export default class LeftNav extends Component {
         </Link>
         {/*菜单*/}
         <Menu
-          /*defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}*/
+          defaultSelectedKeys={['/home']}
+          /*defaultOpenKeys={['sub1']}*/
           mode="inline"
           theme="dark">
-          <Menu.Item key="1" icon={<AppstoreOutlined />}>
-            首页
+          <Menu.Item key="/home" icon={<AppstoreOutlined />}>
+            <Link to='/home'>
+              首页
+            </Link>
           </Menu.Item>
           <SubMenu key="sub1" icon={<LayoutOutlined />} title="商品">
-            <Menu.Item key="5" icon={<PieChartOutlined />}>品类管理</Menu.Item>
-            <Menu.Item key="6" icon={<MacCommandOutlined />}>商品管理</Menu.Item>
+            <Menu.Item key="/category" icon={<PieChartOutlined />}>
+              <Link to='/category'>
+                品类管理
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="/product" icon={<MacCommandOutlined />}>
+              <Link to='/product'>
+                商品管理
+              </Link>
+            </Menu.Item>
           </SubMenu>
+          <Menu.Item key="/user" icon={<AppstoreOutlined />}>
+            <Link to='/user'>
+              用户管理
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="/role" icon={<AppstoreOutlined />}>
+            <Link to='/role'>
+              角色管理
+            </Link>
+          </Menu.Item>
         </Menu>
       </div>
     )
