@@ -1,13 +1,22 @@
 import React, {Component} from 'react'
-import { Form, Input, Button, Checkbox } from 'antd'
+import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import './index.less'
 import logo from './images/logo.jpg'
+import { reqLogin } from  '../../api/'
 
 export default class Login extends Component {
   // 提交表单
-  handleSubmit = (event) => {
-    console.log('提交', event)
+  handleSubmit = async (event) => {
+    const { username, password } = event
+    const res = await reqLogin(username, password)
+    if (res.status === 0) { // 登录成功
+      message.success('登录成功')
+      // 跳转到管理界面
+      this.props.history.replace('/')
+    } else {
+      message.error(res.msg)
+    }
   }
   render() {
     return (
