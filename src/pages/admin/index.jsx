@@ -17,6 +17,8 @@ const { Footer, Sider, Content } = Layout
 
 export default class Admin extends Component {
   render() {
+    // // 获取当前请求的路由路径
+    // const currentPath = this.props.location.pathname
     // 如果内存没有存储user ==> 当前没有登录
     if (!memory.user.username) {
       // 自动跳转到登陆(在render()中)
@@ -25,7 +27,8 @@ export default class Admin extends Component {
     return (
       <Layout style={{height: '100%'}}>
         <Sider>
-          <LeftNav/>
+          {/*<LeftNav currentPath={currentPath}/>*/}
+          <LeftNav />
         </Sider>
         <Layout>
           <HeaderTop/>
