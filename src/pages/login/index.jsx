@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import memory from '../../utils/memory'
 import storage from '../../utils/storage'
 import './index.less'
-import logo from './images/logo.jpg'
+import logo from '../../assets/images/logo.jpg'
 import { reqLogin } from  '../../api/'
 import { Redirect } from 'react-router-dom'
 

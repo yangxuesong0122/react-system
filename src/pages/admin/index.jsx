@@ -1,6 +1,11 @@
 import React, {Component} from 'react'
-import memory from '../../utils/memory'
 import { Redirect } from 'react-router-dom'
+import { Layout } from 'antd'
+import LeftNav from '../../components/leftNav'
+import HeaderTop from '../../components/header'
+
+import memory from '../../utils/memory'
+const { Footer, Sider, Content } = Layout
 
 export default class Admin extends Component {
   render() {
@@ -10,9 +15,16 @@ export default class Admin extends Component {
       return <Redirect to='/login'/>
     }
     return (
-      <div>
-        用户名是：{memory.user.username}
-      </div>
+      <Layout style={{height: '100%'}}>
+        <Sider>
+          <LeftNav/>
+        </Sider>
+        <Layout>
+          <HeaderTop/>
+          <Content style={{backgroundColor: '#000'}}>Content</Content>
+          <Footer style={{ textAlign: 'center', color: '#ccc' }}>React 练手项目</Footer>
+        </Layout>
+      </Layout>
     )
   }
 }
