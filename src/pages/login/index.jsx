@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
 import { Form, Input, Button, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import memory from '../../utils/memory'
+import storage from '../../utils/storage'
 import './index.less'
 import logo from './images/logo.jpg'
 import { reqLogin } from  '../../api/'
+import { Redirect } from 'react-router-dom'
 
 export default class Login extends Component {
   // 提交表单
@@ -12,13 +15,22 @@ export default class Login extends Component {
     const res = await reqLogin(username, password)
     if (res.status === 0) { // 登录成功
       message.success('登录成功')
-      // 跳转到管理界面
+      // 保存到内存中
+      memory.user = res.data
+      // 保存到local中
+      storage.saveUser(res.data)
+      // 跳转到管理界面(state 传参)
+      // this.props.history.replace('/', { username })
       this.props.history.replace('/')
     } else {
       message.error(res.msg)
     }
   }
   render() {
+    // 如果用户已经登录，自动跳转到首页
+    if (memory.user.username) {
+      return <Redirect to='/' />
+    }
     return (
       <div className='login'>
         <header className='login-header'>
