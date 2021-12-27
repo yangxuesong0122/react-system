@@ -8,8 +8,9 @@ import storage from './utils/storage'
 memory.user = storage.getUser()
 
 ReactDOM.render(
-  <React.StrictMode>
+  /*<React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>,*/
+  <App />,
   document.getElementById('root')
 )

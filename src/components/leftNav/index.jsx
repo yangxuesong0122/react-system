@@ -3,7 +3,6 @@ import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
 import {
   AppstoreOutlined,
-  PieChartOutlined,
   LayoutOutlined,
   MacCommandOutlined
 } from '@ant-design/icons'
@@ -16,6 +15,11 @@ const { SubMenu } = Menu
 
 // 左侧导航组件
 class LeftNav extends Component {
+  constructor(props) {
+    super(props)
+    // 初始化获取菜单数据
+    this.menuNodes = this.getMenuNodes(menuList)
+  }
   // 生成menu标签数组(map版本)
   getMenuNodes_map = (menuList) => {
     return menuList.map(item => {
@@ -40,6 +44,14 @@ class LeftNav extends Component {
   getMenuNodes = (menuList) => {
     return menuList.reduce((pre, current) => {
       if (current.children && current.children.length) {
+        // 获取当前请求的路由路径
+        const currentPath = this.props.location.pathname
+        // 查找与当前请求路径匹配的子item
+        const cItem = current.children.find(item => item.key === currentPath)
+        // 如果存在，要展开当前列表
+        if (cItem && cItem.key) {
+          this.openKey = current.key
+        }
         pre.push((
           <SubMenu key={current.key} icon={<LayoutOutlined />} title={current.title}>
             { this.getMenuNodes(current.children) }
@@ -57,6 +69,7 @@ class LeftNav extends Component {
       return pre
     }, [])
   }
+
   render() {
     // 获取当前请求的路由路径
     // const { currentPath } = this.props
@@ -71,11 +84,11 @@ class LeftNav extends Component {
         {/*菜单*/}
         <Menu
           selectedKeys={[currentPath]}
-          /*defaultOpenKeys={['sub1']}*/
+          defaultOpenKeys={[this.openKey]}
           mode="inline"
           theme="dark">
           {
-            this.getMenuNodes(menuList)
+            this.menuNodes
           }
         </Menu>
       </div>

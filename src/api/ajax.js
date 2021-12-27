@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {message} from 'antd'
-// const BASE = 'http://localhost:5000'
+// const BASE = '/api'
 const BASE = ''
 
 export default function ajax(url, data={}, method='get') {
