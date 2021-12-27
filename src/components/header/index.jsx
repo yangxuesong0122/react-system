@@ -1,13 +1,68 @@
 import React, {Component} from 'react'
+import { withRouter } from 'react-router-dom'
+import { formateDate } from '../../utils/dateUtils'
+import memory from '../../utils/memory'
+import menuList from '../../config/menuConfig'
 import './index.less'
 
 // 头部组件
-export default class Header extends Component {
+class Header extends Component {
+  state = {
+    currentTime: formateDate(Date.now())
+  }
+  componentDidMount () {
+    // 获取当前的时间
+    this.getTime()
+  }
+  componentWillUnmount () {
+    // 清除定时器
+    clearInterval(this.intervalId)
+  }
+  // 获取时间
+  getTime = () => {
+    // 每隔1s获取当前时间, 并更新状态数据currentTime
+    this.intervalId = setInterval(() => {
+      const currentTime = formateDate(Date.now())
+      this.setState({currentTime})
+    }, 1000)
+  }
+  // 获取当前路由名称
+  getRouteTitle = () => {
+    // 获取当前请求路径
+    const path = this.props.location.pathname
+    let title = ''
+    menuList.forEach(item => {
+      if (item.key === path) {
+        title = item.title
+      } else if (item.children && item.children.length) {
+        const node = item.children.find(cItem => cItem.key === path)
+        if (node && node.title) {
+          title = node.title
+        }
+      }
+    })
+    return title
+  }
   render() {
+    const { currentTime } = this.state
     return (
       <div className='header'>
-        header
+        <div className='header-top'>
+          <span>欢迎，{memory.user.username}</span>
+          <a>退出</a>
+        </div>
+        <div className='header-bottom'>
+          <div className='header-bottom-left'>
+            {this.getRouteTitle()}
+          </div>
+          <div className='header-bottom-right'>
+            <span style={{marginRight: 5}}>{currentTime}</span>
+            {/*<img/>*/}
+            <span>晴</span>
+          </div>
+        </div>
       </div>
     )
   }
 }
+export default withRouter(Header)
