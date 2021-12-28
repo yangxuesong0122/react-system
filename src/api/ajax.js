@@ -3,7 +3,7 @@ import {message} from 'antd'
 // const BASE = '/api'
 const BASE = ''
 
-export default function ajax(url, data={}, method='get') {
+export default function ajax(url, data={}, method='GET') {
   return new Promise((resolve, reject) => {
     let promise
     // 1. 执行异步ajax请求

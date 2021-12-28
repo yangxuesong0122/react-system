@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { withRouter } from 'react-router-dom'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+import LinkButton from '../linkBtn'
 import { formateDate } from '../../utils/dateUtils'
 import memory from '../../utils/memory'
 import menuList from '../../config/menuConfig'
@@ -69,7 +70,8 @@ class Header extends Component {
       <div className='header'>
         <div className='header-top'>
           <span>欢迎，{memory.user.username}</span>
-          <a onClick={this.handleLogout}>退出</a>
+          {/*<a onClick={this.handleLogout}>退出</a>*/}
+          <LinkButton onClick={this.handleLogout}>退出</LinkButton>
         </div>
         <div className='header-bottom'>
           <div className='header-bottom-left'>
