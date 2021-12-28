@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
-import {Card, Button, Table, message} from 'antd'
+import {Card, Button, Table, message, Modal} from 'antd'
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
+import Dialog from './components/dialog'
 import LinkButton from '../../components/linkBtn'
 import { reqCategorys } from '../../api'
 import './index.less'
@@ -15,7 +16,10 @@ export default class Category extends Component {
     subCategoryList: [], // 子分类列表
     loading: false,
     parentId: '0', // 当前需要显示的分类列表的id
-    parentName: '' // 当前需要显示的分类列表的父分类名称
+    parentName: '', // 当前需要显示的分类列表的父分类名称
+    showStatus: 0, // 添加/更新确认框是否显示
+    dialogTitle: '添加分类',
+    isModalVisible: false
   }
   componentDidMount() {
     this.getCategoryList()
@@ -33,7 +37,7 @@ export default class Category extends Component {
         width: 300,
         render: (row) => (
           <span>
-            <LinkButton>修改分类</LinkButton>
+            <LinkButton onClick={() => this.openDialog(row)}>修改分类</LinkButton>
             { this.state.parentId === '0' ? <LinkButton onClick={ () => this.showSubCategorys(row)}>查看子分类</LinkButton> : '' }
           </span>
         )
@@ -82,8 +86,28 @@ export default class Category extends Component {
       subCategoryList: []
     })
   }
+  // 打开弹框
+  openDialog = (row = null) => {
+    if (!row) {
+      this.setState({
+        showStatus: 1, // 1 添加   2 更新
+        isModalVisible: true
+      })
+    } else {
+      this.setState({
+        showStatus: 2, // 1 添加   2 更新
+        isModalVisible: true
+      })
+    }
+  }
+  // 传给子组件的方法，是否打开弹框
+  changeVisible = (val) => {
+    this.setState({
+      isModalVisible: val
+    })
+  }
   render() {
-    const {categoryList, loading, subCategoryList, parentId, parentName} = this.state
+    const {categoryList, loading, subCategoryList, parentId, parentName, showStatus, isModalVisible} = this.state
     const title = parentId === '0' ? '一级分类列表' : (
       <span>
         <LinkButton onClick={this.toParentList}>一级分类列表</LinkButton>
@@ -92,7 +116,7 @@ export default class Category extends Component {
       </span>
     )
     const btn = (
-      <Button type="primary" icon={<PlusOutlined />}>
+      <Button onClick={() => this.openDialog()} type="primary" icon={<PlusOutlined />}>
         添加
       </Button>
     )
@@ -108,6 +132,8 @@ export default class Category extends Component {
             defaultPageSize: 5,
             showQuickJumper: true
           }}/>
+        {/*添加分类*/}
+        <Dialog isModalVisible={isModalVisible} showStatus={showStatus} changeVisible={this.changeVisible}/>
       </Card>
     )
   }
