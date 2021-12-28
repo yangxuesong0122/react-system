@@ -1,8 +1,11 @@
 import React, {Component} from 'react'
 import { withRouter } from 'react-router-dom'
+import { Modal } from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { formateDate } from '../../utils/dateUtils'
 import memory from '../../utils/memory'
 import menuList from '../../config/menuConfig'
+import storage from '../../utils/storage'
 import './index.less'
 
 // 头部组件
@@ -43,13 +46,30 @@ class Header extends Component {
     })
     return title
   }
+  // 退出登录
+  handleLogout = () => {
+    Modal.confirm({
+      icon: <ExclamationCircleOutlined />,
+      content: '您确定要退出登录吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        // 删除保存的user数据
+        memory.user = {}
+        storage.removeUser()
+
+        // 跳转到登录页面
+        this.props.history.replace('/login')
+      }
+    })
+  }
   render() {
     const { currentTime } = this.state
     return (
       <div className='header'>
         <div className='header-top'>
           <span>欢迎，{memory.user.username}</span>
-          <a>退出</a>
+          <a onClick={this.handleLogout}>退出</a>
         </div>
         <div className='header-bottom'>
           <div className='header-bottom-left'>
