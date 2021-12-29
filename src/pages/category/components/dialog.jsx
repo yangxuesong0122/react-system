@@ -6,7 +6,6 @@ import { reqAddCategory, reqUpdateCategory } from '../../../api/index'
 const {Option} = Select
 
 export default function Dialog(props) {
-  console.log('------------', props)
   const [form] = Form.useForm()
   const {showStatus, isModalVisible, row, categoryList, parentId} = props
   // 确定
@@ -51,14 +50,11 @@ export default function Dialog(props) {
       onCancel={handleCancel}>
       <Form
         form={form}
-        preserve={false}
-        initialValues={{
-          parentId,
-          categoryName: row && row.name ? row.name : ''
-        }}>
+        preserve={false}>
         {showStatus === 1 ? (<Form.Item
           label="所属分类"
           name='parentId'
+          initialValue={parentId}
           rules={[
             {required: true, message: '请选择所属分类!'}
           ]}>
@@ -77,6 +73,7 @@ export default function Dialog(props) {
         <Form.Item
           label="分类名称"
           name='categoryName'
+          initialValue={row && row.name ? row.name : ''}
           rules={[
             { required: true, message: '请输入分类名称!' }
           ]}>
