@@ -1,17 +1,31 @@
 import React, {Component} from 'react'
-import {Modal, Form, Input, Select} from 'antd'
+import {Modal, Form, Input, Select, message} from 'antd'
+import PropTypes from 'prop-types'
 import { reqAddCategory, reqUpdateCategory } from '../../../api/index'
 
 const {Option} = Select
 
 export default function Dialog(props) {
+  console.log('------------', props)
   const [form] = Form.useForm()
-  const {showStatus, isModalVisible} = props
+  const {showStatus, isModalVisible, row, categoryList, parentId} = props
   // 确定
   const handleOk = () => {
-    form.validateFields().then(values => {
-      console.log(values)
-      props.changeVisible(false)
+    form.validateFields().then(async values => {
+      const { categoryName, parentId } = values
+      let res
+      if (showStatus === 1) {
+        res = await reqAddCategory(categoryName, parentId)
+      } else {
+        res = await reqUpdateCategory({categoryId: row._id, categoryName})
+      }
+      if (res.status === 0) {
+        props.changeVisible(false)
+        form.resetFields()
+        props.getCategoryList()
+      } else {
+        message.warning('操作失败，请重试')
+      }
     }).catch(err => {
       return false
     })
@@ -31,24 +45,35 @@ export default function Dialog(props) {
       visible={ isModalVisible }
       cancelText='取消'
       okText='确定'
+      destroyOnClose={true}
+      maskClosable={false}
       onOk={handleOk}
       onCancel={handleCancel}>
-      <Form form={form}>
-        <Form.Item
+      <Form
+        form={form}
+        preserve={false}
+        initialValues={{
+          parentId,
+          categoryName: row && row.name ? row.name : ''
+        }}>
+        {showStatus === 1 ? (<Form.Item
           label="所属分类"
           name='parentId'
           rules={[
-            { required: true, message: '请选择所属分类!' }
+            {required: true, message: '请选择所属分类!'}
           ]}>
           <Select
             placeholder="请选择分类"
             onChange={handleSelectChange}
             allowClear>
-            <Option value="male">male</Option>
-            <Option value="female">female</Option>
-            <Option value="other">other</Option>
+            <Option value="0">一级分类</Option>
+            {
+              categoryList.map(item => {
+                return <Option key={item._id} value={item._id}>{item.name}</Option>
+              })
+            }
           </Select>
-        </Form.Item>
+        </Form.Item>) : ''}
         <Form.Item
           label="分类名称"
           name='categoryName'
@@ -60,4 +85,7 @@ export default function Dialog(props) {
       </Form>
     </Modal>
   )
+}
+Dialog.propTypes = {
+  isModalVisible: PropTypes.bool.isRequired
 }

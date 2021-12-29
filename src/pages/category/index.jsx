@@ -88,6 +88,7 @@ export default class Category extends Component {
   }
   // 打开弹框
   openDialog = (row = null) => {
+    this.row = row
     if (!row) {
       this.setState({
         showStatus: 1, // 1 添加   2 更新
@@ -107,6 +108,7 @@ export default class Category extends Component {
     })
   }
   render() {
+    const row = this.row || {}
     const {categoryList, loading, subCategoryList, parentId, parentName, showStatus, isModalVisible} = this.state
     const title = parentId === '0' ? '一级分类列表' : (
       <span>
@@ -132,8 +134,15 @@ export default class Category extends Component {
             defaultPageSize: 5,
             showQuickJumper: true
           }}/>
-        {/*添加分类*/}
-        <Dialog isModalVisible={isModalVisible} showStatus={showStatus} changeVisible={this.changeVisible}/>
+        {/*添加/修改分类*/}
+        <Dialog
+          row={row}
+          categoryList={categoryList}
+          parentId={parentId}
+          isModalVisible={isModalVisible}
+          showStatus={showStatus}
+          changeVisible={this.changeVisible}
+          getCategoryList={this.getCategoryList}/>
       </Card>
     )
   }
