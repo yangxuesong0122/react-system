@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Card, Select, Table, message, Input, Button} from 'antd'
-import {ArrowRightOutlined, PlusOutlined} from '@ant-design/icons'
-import { reqProducts } from '../../api'
+import { PlusOutlined } from '@ant-design/icons'
+import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api'
 import LinkButton from '../../components/linkBtn'
 import {PAGE_SIZE} from '../../utils/constants'
 
@@ -15,7 +15,10 @@ export default class Home extends Component {
   state = {
     loading: false,
     productList: [],
-    total: 0
+    total: 0,
+    pageNum: '',
+    searchKey: '',
+    searchType: 'productName'
   }
   componentDidMount() {
     this.getProductList(1)
@@ -40,12 +43,14 @@ export default class Home extends Component {
       {
         title: '状态',
         width: 100,
-        dataIndex: 'status',
-        render: status => {
+        // dataIndex: 'status',
+        render: row => {
+          const { status, _id } = row
+          const newStatus = status === 1 ? 2 : 1
           return (
             <div>
-              <Button type='primary'>下架</Button>
-              <span>在售</span>
+              <Button onClick={() => this.handleUpOrDown(_id, newStatus)} type='primary'>{status === 1 ? '下架' : '上架'}</Button>
+              <span>{status === 1 ? '在售' : '已下架'}</span>
             </div>
           )
         }
@@ -55,7 +60,7 @@ export default class Home extends Component {
         width: 100,
         render: (row) => (
           <div>
-            <LinkButton onClick={() => this.openDialog(row)}>详情</LinkButton>
+            <LinkButton onClick={() => this.props.history.push('/product/detail', { row })}>详情</LinkButton>
             <LinkButton onClick={() => this.openDialog(row)}>修改</LinkButton>
           </div>
         )
@@ -64,10 +69,25 @@ export default class Home extends Component {
   }
   // 获取商品分页列表
   getProductList = async(pageNum) => {
+    this.pageNum = pageNum
     this.setState({
       loading: true
     })
-    const res = await reqProducts(pageNum, PAGE_SIZE)
+    // const res = await reqProducts(pageNum, PAGE_SIZE)
+    const {searchKey, searchType} = this.state
+    // 如果搜索关键字有值, 搜索分页
+    let res
+    if (searchKey) {
+      const params = {
+        pageNum,
+        pageSize: PAGE_SIZE,
+        searchName: searchKey,
+        searchType
+      }
+      res = await reqSearchProducts(params)
+    } else { // 一般分页请求
+      res = await reqProducts(pageNum, PAGE_SIZE)
+    }
     this.setState({
       loading: false
     })
@@ -79,16 +99,61 @@ export default class Home extends Component {
       })
     } else {}
   }
+  // 搜索
+  // handleSearch = async () => {
+  //   const { searchKey, searchType, pageNum } = this.state
+  //   const params = {
+  //     pageNum,
+  //     pageSize: PAGE_SIZE,
+  //     searchName: searchKey,
+  //     searchType
+  //   }
+  //   const res = await reqSearchProducts(params)
+  //   if (res.status === 0) {
+  //     const { total, list } = res.data
+  //     this.setState({
+  //       total,
+  //       productList: list
+  //     })
+  //   }
+  // }
+  // 输入框回调
+  handleInputChange = (e) => {
+    this.setState({
+      searchKey: e.target.value
+    })
+  }
+  // 选择框回调
+  handleSelectChange = (e) => {
+    this.setState({
+      searchType: e
+    })
+  }
+  // 分页回调
+  // handlePage = (pageNum, pageSize) => {
+  //   this.setState({
+  //     pageNum
+  //   })
+  // }
+  // 上/下架
+  handleUpOrDown = async (id, status) => {
+    const result = await reqUpdateStatus(id, status)
+    if(result.status === 0) {
+      message.success('更新商品成功')
+      this.getProductList(this.pageNum)
+    }
+  }
   render() {
-    const { loading, productList, total } = this.state
+    const { loading, productList, total, searchType } = this.state
     const title = (
       <span>
-        <Select value='1' style={{width: 150}}>
-          <Option value='1'>按名称搜索</Option>
-          <Option value='2'>按描述搜索</Option>
+        <Select value={searchType} onChange={this.handleSelectChange} style={{width: 150}}>
+          <Option value='productName'>按名称搜索</Option>
+          <Option value='productDesc'>按描述搜索</Option>
         </Select>
-        <Input placeholder='关键字' style={{width: 150, margin: '0 15px'}} />
-        <Button type='primary'>搜索</Button>
+        <Input onChange={this.handleInputChange} placeholder='关键字' style={{width: 150, margin: '0 15px'}} />
+        {/*<Button onClick={this.handleSearch} type='primary'>搜索</Button>*/}
+        <Button onClick={() => this.getProductList(1)} type='primary'>搜索</Button>
       </span>
     )
     const btn = (
@@ -104,7 +169,9 @@ export default class Home extends Component {
           bordered
           rowKey='_id'
           loading={loading}
+          // onChange={this.handlePage}
           pagination={{
+            current: this.pageNum,
             total,
             defaultPageSize: PAGE_SIZE,
             showQuickJumper: true,

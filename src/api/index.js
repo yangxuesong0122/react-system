@@ -24,6 +24,16 @@ export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {
 export const reqUpdateStatus = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST')
 
 /*
+搜索商品分页列表 (根据商品名称/商品描述)
+searchType: 搜索的类型, productName/productDesc
+ */
+export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) => ajax('/manage/product/search', {
+  pageNum,
+  pageSize,
+  [searchType]: searchName
+})
+
+/*
 json请求的接口请求函数
  */
 export const reqWeather = (city) => {

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
+import './index.less'
 
 import Home from "./home"
 import AddUpdate from "./add-update"
