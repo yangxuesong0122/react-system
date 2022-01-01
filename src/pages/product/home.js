@@ -61,7 +61,7 @@ export default class Home extends Component {
         render: (row) => (
           <div>
             <LinkButton onClick={() => this.props.history.push('/product/detail', { row })}>详情</LinkButton>
-            <LinkButton onClick={() => this.openDialog(row)}>修改</LinkButton>
+            <LinkButton onClick={() => this.addOrUpdateProd(row)}>修改</LinkButton>
           </div>
         )
       }
@@ -142,6 +142,10 @@ export default class Home extends Component {
       this.getProductList(this.pageNum)
     }
   }
+  // 添加、修改商品
+  addOrUpdateProd = () => {
+    this.props.history.push('/product/addUpdate')
+  }
   render() {
     const { loading, productList, total, searchType } = this.state
     const title = (
@@ -156,7 +160,7 @@ export default class Home extends Component {
       </span>
     )
     const btn = (
-      <Button onClick={() => this.openDialog()} type="primary" icon={<PlusOutlined />}>
+      <Button onClick={() => this.addOrUpdateProd()} type="primary" icon={<PlusOutlined />}>
         添加商品
       </Button>
     )

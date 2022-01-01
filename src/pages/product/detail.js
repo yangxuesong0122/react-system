@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Card, List, Table} from 'antd'
+import {Card, List} from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/linkBtn'
 import {BASE_IMG_URL} from '../../utils/constants'
