@@ -3,8 +3,7 @@ import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
 import {
   AppstoreOutlined,
-  LayoutOutlined,
-  MacCommandOutlined
+  LayoutOutlined
 } from '@ant-design/icons'
 import menuList from '../../config/menuConfig'
 
@@ -47,7 +46,7 @@ class LeftNav extends Component {
         // 获取当前请求的路由路径
         const currentPath = this.props.location.pathname
         // 查找与当前请求路径匹配的子item
-        const cItem = current.children.find(item => item.key === currentPath)
+        const cItem = current.children.find(item => currentPath.indexOf(item.key) === 0)
         // 如果存在，要展开当前列表
         if (cItem && cItem.key) {
           this.openKey = current.key
@@ -73,7 +72,10 @@ class LeftNav extends Component {
   render() {
     // 获取当前请求的路由路径
     // const { currentPath } = this.props
-    const currentPath = this.props.location.pathname
+    let currentPath = this.props.location.pathname
+    if (currentPath.indexOf('/product') === 0) {
+      currentPath = '/product'
+    }
     return (
       <div className='left-nav'>
         {/*顶部标题*/}

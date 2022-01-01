@@ -73,7 +73,6 @@ export default class Home extends Component {
     this.setState({
       loading: true
     })
-    // const res = await reqProducts(pageNum, PAGE_SIZE)
     const {searchKey, searchType} = this.state
     // 如果搜索关键字有值, 搜索分页
     let res
