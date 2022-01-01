@@ -143,8 +143,8 @@ export default class Home extends Component {
     }
   }
   // 添加、修改商品
-  addOrUpdateProd = () => {
-    this.props.history.push('/product/addUpdate')
+  addOrUpdateProd = (row = null) => {
+    this.props.history.push('/product/addUpdate', row)
   }
   render() {
     const { loading, productList, total, searchType } = this.state

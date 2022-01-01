@@ -19,8 +19,8 @@ export default class AddUpdate extends Component {
     this.props.history.goBack()
   }
   // 确认
-  onFinish = () => {
-
+  onFinish = (event) => {
+    console.log(event)
   }
   loadData = async (selectedOptions) => {
     // 当前选择的 option 对象
@@ -42,12 +42,26 @@ export default class AddUpdate extends Component {
       options: [...this.state.options]
     })
   }
-  initOptions = (categorys) => {
+  initOptions = async (categorys) => {
     const options = categorys.map(item => ({
       value: item._id,
       label: item.name,
       isLeaf: false
     }))
+    const {state} = this.props.location
+    const { pCategoryId, categoryId } = state
+    if (state && pCategoryId !== '0') {
+      const subCategorys = await this.reqCategorys(categoryId)
+      // 生成二级下拉列表的options
+      const childOptions = subCategorys.map(item => ({
+        value: item._id,
+        label: item.name,
+        isLeaf: true
+      }))
+      // 关联到对应的一级options上
+      const targetOption = options.find(item => item.value === pCategoryId)
+      targetOption.children = childOptions
+    }
     this.setState({
       options
     })
@@ -64,24 +78,37 @@ export default class AddUpdate extends Component {
     }
   }
   render() {
+    const {options} = this.state
+    const {state} = this.props.location
+    // 级联分类Id数组
+    const categoryIds = []
+    if (state) {
+      const { pCategoryId, categoryId } = state
+      if (pCategoryId === '0') {
+        categoryIds.push(categoryId)
+      } else {
+        categoryIds.push(pCategoryId)
+        categoryIds.push(categoryId)
+      }
+    }
     const title = (
       <div>
         <LinkButton onClick={this.goBack}>
           <ArrowLeftOutlined style={{fontSize: 15}}/>
         </LinkButton>
-        <span style={{marginLeft: 5}}>添加商品</span>
+        <span style={{marginLeft: 5}}>{state ? '修改商品' : '添加商品'}</span>
       </div>
     )
     const layout = {
       labelCol: { span: 1.5 },
       wrapperCol: { span: 8 }
     }
-    const {options} = this.state
     return (
       <Card title={title}>
         <Form {...layout} onFinish={this.onFinish}>
           <Form.Item
             name="name"
+            initialValue={state && state.name ? state.name : ''}
             label="商品名称"
             rules={[
               { required: true, message: '请输入商品名称!' }
@@ -90,6 +117,7 @@ export default class AddUpdate extends Component {
           </Form.Item>
           <Form.Item
             name="desc"
+            initialValue={state && state.desc ? state.desc : ''}
             label="商品描述"
             rules={[
               { required: true, message: '请输入商品描述!' },
@@ -98,6 +126,7 @@ export default class AddUpdate extends Component {
           </Form.Item>
           <Form.Item
             name="price"
+            initialValue={state && state.price ? state.price : ''}
             label="商品价格"
             rules={[
               { required: true, message: '请输入商品价格!' },
@@ -114,7 +143,8 @@ export default class AddUpdate extends Component {
             <Input placeholder='请输入商品价格' type='number' addonAfter="元" />
           </Form.Item>
           <Form.Item
-            name="note"
+            name="categoryIds"
+            initialValue={categoryIds}
             label="商品分类"
             rules={[
               { required: true, message: '请选择商品分类!' }
