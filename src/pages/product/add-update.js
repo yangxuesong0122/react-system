@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { Card, Form, Input, Cascader, Upload, Button, Select } from 'antd'
 import LinkButton from "../../components/linkBtn"
+import PicturesWall from './pictures-wall.jxs'
 import {ArrowLeftOutlined} from "@ant-design/icons"
 import {reqCategorys} from '../../api'
 const {Item} = Form
@@ -21,6 +22,7 @@ export default class AddUpdate extends Component {
   // 确认
   onFinish = (event) => {
     console.log(event)
+    console.log(this.pw.getImgs())
   }
   loadData = async (selectedOptions) => {
     // 当前选择的 option 对象
@@ -49,7 +51,7 @@ export default class AddUpdate extends Component {
       isLeaf: false
     }))
     const {state} = this.props.location
-    const { pCategoryId, categoryId } = state
+    const { pCategoryId, categoryId } = state || {}
     if (state && pCategoryId !== '0') {
       const subCategorys = await this.reqCategorys(categoryId)
       // 生成二级下拉列表的options
@@ -80,10 +82,10 @@ export default class AddUpdate extends Component {
   render() {
     const {options} = this.state
     const {state} = this.props.location
+    const { pCategoryId, categoryId, imgs } = state || {}
     // 级联分类Id数组
     const categoryIds = []
     if (state) {
-      const { pCategoryId, categoryId } = state
       if (pCategoryId === '0') {
         categoryIds.push(categoryId)
       } else {
@@ -150,14 +152,12 @@ export default class AddUpdate extends Component {
               { required: true, message: '请选择商品分类!' }
             ]}>
             <Cascader
+              placeholder='请选择商品分类'
               options={options}
               loadData={this.loadData} />
           </Form.Item>
-          <Form.Item
-            name="note"
-            label="商品图片"
-            rules={[{ required: true }]}>
-            <Input placeholder='请输入商品价格' type='number' addonAfter="元" />
+          <Form.Item label="商品图片">
+            <PicturesWall ref={c => this.pw = c} imgs={imgs}/>
           </Form.Item>
           <Form.Item
             name="note"

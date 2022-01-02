@@ -23,6 +23,8 @@ export const reqProducts = (pageNum, pageSize) => ajax('/manage/product/list', {
 // 更新商品的状态(上架/下架)
 export const reqUpdateStatus = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST')
 
+// 删除指定名称的图片
+export const reqDeleteImg = (name) => ajax('/manage/img/delete', {name}, 'POST')
 /*
 搜索商品分页列表 (根据商品名称/商品描述)
 searchType: 搜索的类型, productName/productDesc
