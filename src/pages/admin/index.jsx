@@ -11,6 +11,7 @@ import Role from '../role'
 import Bar from '../charts/bar'
 import Line from '../charts/line'
 import Pie from '../charts/pie'
+import './index.less'
 
 import memory from '../../utils/memory'
 const { Footer, Sider, Content } = Layout
@@ -32,7 +33,7 @@ export default class Admin extends Component {
         </Sider>
         <Layout>
           <HeaderTop/>
-          <Content style={{margin: '20px', backgroundColor: '#fff'}}>
+          <Content className='content'>
             <Switch>
               <Route path='/home' component={Home}/>
               <Route path='/category' component={Category}/>

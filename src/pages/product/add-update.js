@@ -1,13 +1,18 @@
 import React, {Component} from 'react'
-import { Card, Form, Input, Cascader, Upload, Button, Select } from 'antd'
+import { Card, Form, Input, Cascader, Button, message } from 'antd'
 import LinkButton from "../../components/linkBtn"
+import RichTextEditor from '../../components/RichTextEditor'
 import PicturesWall from './pictures-wall.jxs'
 import {ArrowLeftOutlined} from "@ant-design/icons"
-import {reqCategorys} from '../../api'
-const {Item} = Form
+import {reqCategorys, reqAddOrUpdateProduct} from '../../api'
 const { TextArea } = Input
 
 export default class AddUpdate extends Component {
+  constructor(props) {
+    super(props)
+    // 创建用来保存ref标识的标签对象的容器
+    this.richEditor = React.createRef()
+  }
   state = {
     options: []
   }
@@ -20,9 +25,38 @@ export default class AddUpdate extends Component {
     this.props.history.goBack()
   }
   // 确认
-  onFinish = (event) => {
-    console.log(event)
-    console.log(this.pw.getImgs())
+  onFinish = async (event) => {
+    const {state} = this.props.location
+    const {name, desc, price, categoryIds} = event
+    let pCategoryId, categoryId
+    if (categoryIds.length === 1) {
+      pCategoryId = '0'
+      categoryId = categoryIds[0]
+    } else {
+      pCategoryId = categoryIds[0]
+      categoryId = categoryIds[1]
+    }
+    const imgs = this.pw.getImgs()
+    const detail = this.richEditor.current.getDetail()
+    const params = {
+      name,
+      desc,
+      price,
+      pCategoryId,
+      categoryId,
+      imgs,
+      detail
+    }
+    if (state) { // 修改商品
+      params._id = state._id
+    }
+    const res = await reqAddOrUpdateProduct(params)
+    if (res.status === 0) {
+      message.success(`${state ? '修改' : '添加'}商品成功`)
+      this.props.history.goBack()
+    } else {
+      message.error(`${state ? '修改' : '添加'}商品失败`)
+    }
   }
   loadData = async (selectedOptions) => {
     // 当前选择的 option 对象
@@ -51,18 +85,20 @@ export default class AddUpdate extends Component {
       isLeaf: false
     }))
     const {state} = this.props.location
-    const { pCategoryId, categoryId } = state || {}
-    if (state && pCategoryId !== '0') {
-      const subCategorys = await this.reqCategorys(categoryId)
-      // 生成二级下拉列表的options
-      const childOptions = subCategorys.map(item => ({
-        value: item._id,
-        label: item.name,
-        isLeaf: true
-      }))
-      // 关联到对应的一级options上
-      const targetOption = options.find(item => item.value === pCategoryId)
-      targetOption.children = childOptions
+    if (state) {
+      const { pCategoryId, categoryId } = state
+      if (pCategoryId !== '0') {
+        const subCategorys = await this.reqCategorys(pCategoryId)
+        // 生成二级下拉列表的options
+        const childOptions = subCategorys.map(item => ({
+          value: item._id,
+          label: item.name,
+          isLeaf: true
+        }))
+        // 关联到对应的一级options上
+        const targetOption = options.find(item => item.value === pCategoryId)
+        targetOption.children = childOptions
+      }
     }
     this.setState({
       options
@@ -82,7 +118,7 @@ export default class AddUpdate extends Component {
   render() {
     const {options} = this.state
     const {state} = this.props.location
-    const { pCategoryId, categoryId, imgs } = state || {}
+    const { pCategoryId, categoryId, imgs, detail } = state || {}
     // 级联分类Id数组
     const categoryIds = []
     if (state) {
@@ -160,10 +196,11 @@ export default class AddUpdate extends Component {
             <PicturesWall ref={c => this.pw = c} imgs={imgs}/>
           </Form.Item>
           <Form.Item
-            name="note"
             label="商品详情"
+            labelCol={{ span: 1.5 }}
+            wrapperCol={{ span: 20 }}
             rules={[{ required: true }]}>
-            <Input placeholder='请输入商品价格' type='number' addonAfter="元" />
+            <RichTextEditor ref={this.richEditor} detail={detail}/>
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">

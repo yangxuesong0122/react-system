@@ -25,6 +25,7 @@ export const reqUpdateStatus = (productId, status) => ajax('/manage/product/upda
 
 // 删除指定名称的图片
 export const reqDeleteImg = (name) => ajax('/manage/img/delete', {name}, 'POST')
+
 /*
 搜索商品分页列表 (根据商品名称/商品描述)
 searchType: 搜索的类型, productName/productDesc
@@ -34,6 +35,9 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
   pageSize,
   [searchType]: searchName
 })
+
+// 添加/修改商品
+export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/' + ( product._id?'update':'add'), product, 'POST')
 
 /*
 json请求的接口请求函数

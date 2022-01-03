@@ -51,23 +51,23 @@ export default class Detail extends Component {
     return (
       <Card size="small" title={title} className='product-detail'>
         <List>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>商品名称: </span>
             <span>{row.name}</span>
           </Item>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>商品描述: </span>
             <span>{row.desc}</span>
           </Item>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>商品价格: </span>
             <span>{row.price}元</span>
           </Item>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>所属分类: </span>
             <span>{cNameOne} {cNameTwo ? `-- > ${cNameTwo}` : ''}</span>
           </Item>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>商品图片: </span>
             <span>
               {
@@ -77,7 +77,7 @@ export default class Detail extends Component {
               }
             </span>
           </Item>
-          <Item>
+          <Item style={{justifyContent: 'unset'}}>
             <span className='left-title'>商品详情: </span>
             <span dangerouslySetInnerHTML={{__html: row.detail}} />
           </Item>
