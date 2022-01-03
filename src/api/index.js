@@ -26,6 +26,9 @@ export const reqUpdateStatus = (productId, status) => ajax('/manage/product/upda
 // 删除指定名称的图片
 export const reqDeleteImg = (name) => ajax('/manage/img/delete', {name}, 'POST')
 
+// 获取所有角色的列表
+export const reqRoles = () => ajax('/manage/role/list')
+
 /*
 搜索商品分页列表 (根据商品名称/商品描述)
 searchType: 搜索的类型, productName/productDesc
@@ -38,6 +41,9 @@ export const reqSearchProducts = ({pageNum, pageSize, searchName, searchType}) =
 
 // 添加/修改商品
 export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/' + ( product._id?'update':'add'), product, 'POST')
+
+// 添加角色
+export const reqAddRole = (roleName) => ajax('/manage/role/add', {roleName}, 'POST')
 
 /*
 json请求的接口请求函数
