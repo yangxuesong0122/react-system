@@ -45,6 +45,9 @@ export const reqAddOrUpdateProduct = (product) => ajax('/manage/product/' + ( pr
 // 添加角色
 export const reqAddRole = (roleName) => ajax('/manage/role/add', {roleName}, 'POST')
 
+// 设置角色
+export const reqUpdateRole = (role) => ajax('/manage/role/update', role, 'POST')
+
 /*
 json请求的接口请求函数
  */

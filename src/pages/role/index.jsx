@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import {Card, Button, Table} from 'antd'
 import dayjs from 'dayjs'
 import {reqRoles} from '../../api'
-import LinkButton from "../../components/linkBtn"
 import {PAGE_SIZE} from '../../utils/constants'
 import AddRole from './add-role'
+import SetRole from './set-role'
 
 export default class Role extends Component {
   constructor(props) {
@@ -14,7 +14,8 @@ export default class Role extends Component {
 
   state = {
     roles: [],
-    isAddModalVisible: false,
+    isAddModalVisible: false, // 添加角色
+    isSetModalVisible: false, // 设置角色
     role: {} // 选中的 role
   }
 
@@ -38,7 +39,10 @@ export default class Role extends Component {
       },
       {
         title: '授权时间',
-        dataIndex: 'auth_time'
+        dataIndex: 'auth_time',
+        render: (auth_time) => (
+          dayjs(auth_time).format('YYYY-MM-DD HH:mm:ss')
+        )
       },
       {
         title: '授权人',
@@ -58,8 +62,9 @@ export default class Role extends Component {
   onRow = (row) => {
     return {
       onClick: event => { // 点击行
+        const {role} = this.state
         this.setState({
-          role: row
+          role: role._id === row._id ? {} : row
         })
       }
     }
@@ -70,19 +75,31 @@ export default class Role extends Component {
       isAddModalVisible: true
     })
   }
+  // 设置角色
+  setRole = () => {
+    this.setState({
+      isSetModalVisible: true
+    })
+  }
   // 关闭添加角色弹框
   changeAddVisible = () => {
     this.setState({
       isAddModalVisible: false
     })
   }
+  // 关闭设置角色弹框
+  changeSetVisible = () => {
+    this.setState({
+      isSetModalVisible: false
+    })
+  }
 
   render() {
-    const {roles, role, isAddModalVisible} = this.state
+    const {roles, role, isAddModalVisible, isSetModalVisible} = this.state
     const title = (
       <div>
         <Button type='primary' onClick={() => this.addRole()} style={{marginRight: 10}}>创建角色</Button>
-        <Button type='primary' disabled={!role._id}>设置角色权限</Button>
+        <Button type='primary' disabled={!role._id} onClick={this.setRole}>设置角色权限</Button>
       </div>
     )
     return (
@@ -95,10 +112,17 @@ export default class Role extends Component {
           columns={this.columns}
           pagination={{defaultPageSize: PAGE_SIZE}}
           onRow={this.onRow}/>
+        {/*添加角色*/}
         <AddRole
           isAddModalVisible={isAddModalVisible}
           getRoles={this.getRoles}
           changeAddVisible={this.changeAddVisible}/>
+        {/*设置角色*/}
+        <SetRole
+          role={role}
+          isSetModalVisible={isSetModalVisible}
+          getRoles={this.getRoles}
+          changeSetVisible={this.changeSetVisible}/>
       </Card>
     )
   }
