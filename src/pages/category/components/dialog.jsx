@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {Modal, Form, Input, Select, message} from 'antd'
 import PropTypes from 'prop-types'
 import { reqAddCategory, reqUpdateCategory } from '../../../api/index'

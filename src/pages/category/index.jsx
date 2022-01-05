@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Card, Button, Table, message, Modal} from 'antd'
+import {Card, Button, Table, message} from 'antd'
 import { PlusOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import Dialog from './components/dialog'
 import LinkButton from '../../components/linkBtn'

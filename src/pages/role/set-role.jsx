@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {PureComponent} from 'react'
 import {Modal, Form, Input, message, Tree} from 'antd'
 import PropTypes from 'prop-types'
 import menuList from '../../config/menuConfig'
@@ -6,7 +6,7 @@ import memoryUtils from '../../utils/memory'
 import storage from '../../utils/storage'
 import { reqUpdateRole } from '../../api'
 
-export default class Dialog extends Component {
+export default class Dialog extends PureComponent {
   constructor(props) {
     super(props)
     this.treeData = [
