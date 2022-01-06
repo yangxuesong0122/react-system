@@ -6,6 +6,7 @@ import {
   LayoutOutlined
 } from '@ant-design/icons'
 import menuList from '../../config/menuConfig'
+import memory from "../../utils/memory"
 
 import logo from '../../assets/images/logo.jpg'
 import './index.less'
@@ -42,31 +43,47 @@ class LeftNav extends Component {
   // 生成menu标签数组(reduce版本)
   getMenuNodes = (menuList) => {
     return menuList.reduce((pre, current) => {
-      if (current.children && current.children.length) {
-        // 获取当前请求的路由路径
-        const currentPath = this.props.location.pathname
-        // 查找与当前请求路径匹配的子item
-        const cItem = current.children.find(item => currentPath.indexOf(item.key) === 0)
-        // 如果存在，要展开当前列表
-        if (cItem && cItem.key) {
-          this.openKey = current.key
+      if (this.haseAuth(current)) {
+        if (current.children && current.children.length) {
+          // 获取当前请求的路由路径
+          const currentPath = this.props.location.pathname
+          // 查找与当前请求路径匹配的子item
+          const cItem = current.children.find(item => currentPath.indexOf(item.key) === 0)
+          // 如果存在，要展开当前列表
+          if (cItem && cItem.key) {
+            this.openKey = current.key
+          }
+          pre.push((
+            <SubMenu key={current.key} icon={<LayoutOutlined />} title={current.title}>
+              { this.getMenuNodes(current.children) }
+            </SubMenu>
+          ))
+        } else {
+          pre.push((
+            <Menu.Item key={current.key} icon={<AppstoreOutlined />}>
+              <Link to={current.key}>
+                {current.title}
+              </Link>
+            </Menu.Item>
+          ))
         }
-        pre.push((
-          <SubMenu key={current.key} icon={<LayoutOutlined />} title={current.title}>
-            { this.getMenuNodes(current.children) }
-          </SubMenu>
-        ))
-      } else {
-        pre.push((
-          <Menu.Item key={current.key} icon={<AppstoreOutlined />}>
-            <Link to={current.key}>
-              {current.title}
-            </Link>
-          </Menu.Item>
-        ))
       }
       return pre
     }, [])
+  }
+
+  // 判断是否有权限
+  haseAuth = (item) => {
+    const key = item.key
+    const username = memory.user.username
+    const menus = memory.user.role.menus
+    // 当前用户是 admin，不用判断，直接通过
+    if (username === 'admin' || item.isPublic || menus.indexOf(key) !== -1) {
+      return true
+    } else if (item.children) {
+      return !!item.children.find(child => menus.indexOf(child.key) !== -1)
+    }
+    return false
   }
 
   render() {

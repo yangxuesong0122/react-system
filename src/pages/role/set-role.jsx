@@ -1,12 +1,13 @@
 import React, {PureComponent} from 'react'
 import {Modal, Form, Input, message, Tree} from 'antd'
+import { withRouter } from "react-router-dom"
 import PropTypes from 'prop-types'
 import menuList from '../../config/menuConfig'
 import memoryUtils from '../../utils/memory'
 import storage from '../../utils/storage'
 import { reqUpdateRole } from '../../api'
 
-export default class Dialog extends PureComponent {
+class Dialog extends PureComponent {
   constructor(props) {
     super(props)
     this.treeData = [
@@ -39,7 +40,7 @@ export default class Dialog extends PureComponent {
         memoryUtils.user = {}
         storage.removeUser()
         this.props.history.replace('/login')
-        message.success('当前用户角色权限成功')
+        message.success('当前用户角色权限修改成功，请重新登录')
       } else {
         message.success('设置角色权限成功')
         getRoles()
@@ -86,3 +87,4 @@ export default class Dialog extends PureComponent {
     )
   }
 }
+export default withRouter(Dialog)
