@@ -1,13 +1,12 @@
 import React, {Component} from 'react'
 import { withRouter } from 'react-router-dom'
+import {connect} from 'react-redux'
 import { Modal } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import LinkButton from '../linkBtn'
 import { formateDate } from '../../utils/dateUtils'
-import memory from '../../utils/memory'
-import menuList from '../../config/menuConfig'
-import storage from '../../utils/storage'
 import './index.less'
+import {logOut} from '../../redux/actions'
 
 // 头部组件
 class Header extends Component {
@@ -31,22 +30,22 @@ class Header extends Component {
     }, 1000)
   }
   // 获取当前路由名称
-  getRouteTitle = () => {
-    // 获取当前请求路径
-    const path = this.props.location.pathname
-    let title = ''
-    menuList.forEach(item => {
-      if (item.key === path) {
-        title = item.title
-      } else if (item.children && item.children.length) {
-        const node = item.children.find(cItem => path.indexOf(cItem.key) === 0)
-        if (node && node.title) {
-          title = node.title
-        }
-      }
-    })
-    return title
-  }
+  // getRouteTitle = () => {
+  //   // 获取当前请求路径
+  //   const path = this.props.location.pathname
+  //   let title = ''
+  //   menuList.forEach(item => {
+  //     if (item.key === path) {
+  //       title = item.title
+  //     } else if (item.children && item.children.length) {
+  //       const node = item.children.find(cItem => path.indexOf(cItem.key) === 0)
+  //       if (node && node.title) {
+  //         title = node.title
+  //       }
+  //     }
+  //   })
+  //   return title
+  // }
   // 退出登录
   handleLogout = () => {
     Modal.confirm({
@@ -55,27 +54,26 @@ class Header extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        // 删除保存的user数据
-        memory.user = {}
-        storage.removeUser()
-
+        this.props.logOut()
         // 跳转到登录页面
-        this.props.history.replace('/login')
+        // this.props.history.replace('/login')
       }
     })
   }
   render() {
     const { currentTime } = this.state
+    const {title, user} = this.props
     return (
       <div className='header'>
         <div className='header-top'>
-          <span>欢迎，{memory.user.username}</span>
+          <span>欢迎，{user.username}</span>
           {/*<a onClick={this.handleLogout}>退出</a>*/}
           <LinkButton onClick={this.handleLogout}>退出</LinkButton>
         </div>
         <div className='header-bottom'>
           <div className='header-bottom-left'>
-            {this.getRouteTitle()}
+            {/*{this.getRouteTitle()}*/}
+            {title}
           </div>
           <div className='header-bottom-right'>
             <span style={{marginRight: 5}}>{currentTime}</span>
@@ -87,4 +85,7 @@ class Header extends Component {
     )
   }
 }
-export default withRouter(Header)
+export default connect(
+  state => ({title: state.headTitle, user: state.user}),
+  {logOut}
+)(withRouter(Header))

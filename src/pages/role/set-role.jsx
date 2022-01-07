@@ -2,10 +2,10 @@ import React, {PureComponent} from 'react'
 import {Modal, Form, Input, message, Tree} from 'antd'
 import { withRouter } from "react-router-dom"
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import menuList from '../../config/menuConfig'
-import memoryUtils from '../../utils/memory'
-import storage from '../../utils/storage'
 import { reqUpdateRole } from '../../api'
+import {logOut} from '../../redux/actions'
 
 class Dialog extends PureComponent {
   constructor(props) {
@@ -28,18 +28,16 @@ class Dialog extends PureComponent {
   // 确定
   handleOk = async () => {
     const {checkedKeys} = this.state
-    const {role, getRoles} = this.props
+    const {role, getRoles, user} = this.props
     role.menus = checkedKeys
     role.auth_time = Date.now()
-    role.auth_name = memoryUtils.user.username
+    role.auth_name = user.username
     // 请求更新
     const result = await reqUpdateRole(role)
     if (result.status === 0) {
       // 如果当前更新的是自己角色的权限, 强制退出
-      if (role._id === memoryUtils.user.role_id) {
-        memoryUtils.user = {}
-        storage.removeUser()
-        this.props.history.replace('/login')
+      if (role._id === user.role_id) {
+        this.props.logOut()
         message.success('当前用户角色权限修改成功，请重新登录')
       } else {
         message.success('设置角色权限成功')
@@ -87,4 +85,7 @@ class Dialog extends PureComponent {
     )
   }
 }
-export default withRouter(Dialog)
+export default connect(
+  state => ({user: state.user}),
+  {logOut}
+)(withRouter(Dialog))

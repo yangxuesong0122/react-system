@@ -1,16 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {Provider} from 'react-redux'
 import App from './App'
-import memory from './utils/memory'
-import storage from './utils/storage'
-
-// 读取local中保存的user，保存到内存中
-memory.user = storage.getUser()
+import store from './redux/store'
 
 ReactDOM.render(
-  /*<React.StrictMode>
-    <App />
-  </React.StrictMode>,*/
-  <App />,
+  (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  ),
   document.getElementById('root')
 )

@@ -1,35 +1,23 @@
 import React, {Component} from 'react'
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import memory from '../../utils/memory'
-import storage from '../../utils/storage'
 import './index.less'
 import logo from '../../assets/images/logo.jpg'
-import { reqLogin } from  '../../api/'
 import { Redirect } from 'react-router-dom'
+import {connect} from 'react-redux'
+import {login} from '../../redux/actions'
 
-export default class Login extends Component {
+class Login extends Component {
   // 提交表单
   handleSubmit = async (event) => {
     const { username, password } = event
-    const res = await reqLogin(username, password)
-    if (res.status === 0) { // 登录成功
-      message.success('登录成功')
-      // 保存到内存中
-      memory.user = res.data
-      // 保存到local中
-      storage.saveUser(res.data)
-      // 跳转到管理界面(state 传参)
-      // this.props.history.replace('/', { username })
-      this.props.history.replace('/')
-    } else {
-      message.error(res.msg)
-    }
+    this.props.login({username, password})
   }
   render() {
     // 如果用户已经登录，自动跳转到首页
-    if (memory.user.username) {
-      return <Redirect to='/' />
+    const user = this.props.user
+    if (user && user.username) {
+      return <Redirect to='/home' />
     }
     return (
       <div className='login'>
@@ -39,6 +27,7 @@ export default class Login extends Component {
         </header>
         <section className='login-box'>
           <div className='login-content'>
+            <div className={user.errMsg ? 'error-msg show' : 'error-msg'}>{user.errMsg}</div>
             <h2>用户登录</h2>
             <Form
               name="normal_login"
@@ -80,3 +69,9 @@ export default class Login extends Component {
     )
   }
 }
+export default connect(
+  state => ({user: state.user}),
+  {
+    login
+  }
+)(Login)

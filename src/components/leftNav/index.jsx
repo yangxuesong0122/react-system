@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 import { Link, withRouter } from 'react-router-dom'
 import { Menu } from 'antd'
 import {
   AppstoreOutlined,
   LayoutOutlined
 } from '@ant-design/icons'
+import {setHeadTitle} from '../../redux/actions'
 import menuList from '../../config/menuConfig'
-import memory from "../../utils/memory"
-
 import logo from '../../assets/images/logo.jpg'
 import './index.less'
 
@@ -42,11 +42,11 @@ class LeftNav extends Component {
   }
   // 生成menu标签数组(reduce版本)
   getMenuNodes = (menuList) => {
+    // 获取当前请求的路由路径
+    const currentPath = this.props.location.pathname
     return menuList.reduce((pre, current) => {
       if (this.haseAuth(current)) {
         if (current.children && current.children.length) {
-          // 获取当前请求的路由路径
-          const currentPath = this.props.location.pathname
           // 查找与当前请求路径匹配的子item
           const cItem = current.children.find(item => currentPath.indexOf(item.key) === 0)
           // 如果存在，要展开当前列表
@@ -59,9 +59,12 @@ class LeftNav extends Component {
             </SubMenu>
           ))
         } else {
+          if (current.key === currentPath || currentPath.indexOf(current.key) === 0) {
+            this.props.setHeadTitle(current.title)
+          }
           pre.push((
             <Menu.Item key={current.key} icon={<AppstoreOutlined />}>
-              <Link to={current.key}>
+              <Link to={current.key} onClick={() => this.setHeadTitle(current.title)}>
                 {current.title}
               </Link>
             </Menu.Item>
@@ -72,11 +75,16 @@ class LeftNav extends Component {
     }, [])
   }
 
+  // 存储头部标题
+  setHeadTitle = (title) => {
+    this.props.setHeadTitle(title)
+  }
   // 判断是否有权限
   haseAuth = (item) => {
     const key = item.key
-    const username = memory.user.username
-    const menus = memory.user.role.menus
+    const user = this.props.user
+    const username = user.username
+    const menus = user.role.menus
     // 当前用户是 admin，不用判断，直接通过
     if (username === 'admin' || item.isPublic || menus.indexOf(key) !== -1) {
       return true
@@ -115,4 +123,14 @@ class LeftNav extends Component {
   }
 }
 // 包装非路由组件，返回新组件
-export default withRouter(LeftNav)
+export default connect(
+  state => ({user: state.user}),
+  // dispatch => ({
+  //   setHeadTitle: (data) => {
+  //     dispatch(setHeadTitle(data))
+  //   }
+  // })
+  {
+    setHeadTitle
+  }
+)(withRouter(LeftNav))
