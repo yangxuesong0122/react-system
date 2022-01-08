@@ -60,6 +60,7 @@ export default class Home extends Component {
         width: 100,
         render: (row) => (
           <div>
+            {/*HashRouter 不能用下面的state方式传递参数，可以把数据存到redux中*/}
             <LinkButton onClick={() => this.props.history.push('/product/detail', { row })}>详情</LinkButton>
             <LinkButton onClick={() => this.addOrUpdateProd(row)}>修改</LinkButton>
           </div>
